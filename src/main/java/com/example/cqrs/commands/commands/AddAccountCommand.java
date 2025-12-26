@@ -8,9 +8,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class addAccountCommand {
+public class AddAccountCommand {
     @TargetAggregateIdentifier
     private String id;
-    private Double initBalancel;
+    private Double initBalance;
     private String currency;
 }
