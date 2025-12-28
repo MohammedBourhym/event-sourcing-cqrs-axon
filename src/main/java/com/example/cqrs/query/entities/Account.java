@@ -1,6 +1,7 @@
 package com.example.cqrs.query.entities;
 
 import java.sql.Date;
+import java.time.Instant;
 
 import com.example.cqrs.enums.AccountStatus;
 
@@ -23,7 +24,7 @@ import lombok.Setter;
 public class Account {
     @Id
     private String id;
-    private Date createdAt;
+    private Instant createdAt;
     private double balance;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;

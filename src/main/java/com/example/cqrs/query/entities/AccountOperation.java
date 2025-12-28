@@ -1,6 +1,7 @@
 package com.example.cqrs.query.entities;
 
 import java.sql.Date;
+import java.time.Instant;
 
 import com.example.cqrs.enums.OperationType;
 
@@ -27,7 +28,7 @@ public class AccountOperation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date date;
+    private Instant date;
     private double amount;
     @Enumerated(EnumType.STRING)
     private OperationType type;
