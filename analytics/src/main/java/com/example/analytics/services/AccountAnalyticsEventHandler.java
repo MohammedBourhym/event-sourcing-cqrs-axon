@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 public class AccountAnalyticsEventHandler {
     private AccountAnalyticsRepository accountAnalyticsRepository;
 
+    private QueryUpdateEmitter queryUpdateEmitter;
+
     @EventHandler
     public void on(AccountCreatedEvent event) {
         log.info("AccountCreatedEvent {}", event);
@@ -32,6 +34,8 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setTotalDebit(accountAnalytics.getTotalDebit() + event.getAmount());
         accountAnalytics.setTotalNumberOfDebits(accountAnalytics.getTotalNumberOfDebits() + 1);
         accountAnalyticsRepository.save(accountAnalytics);
+        queryUpdateEmitter.emit(AccountAnalytics.class, (query) -> query.getAccountId().equals(event.getAccountId()),
+                accountAnalytics);
     }
 
     @EventHandler
@@ -42,6 +46,8 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setTotalCredit(accountAnalytics.getTotalCredit() + event.getAmount());
         accountAnalytics.setTotalNumberOfCredits(accountAnalytics.getTotalNumberOfCredits() + 1);
         accountAnalyticsRepository.save(accountAnalytics);
+        queryUpdateEmitter.emit(AccountAnalytics.class, (query) -> query.getAccountId().equals(event.getAccountId()),
+                accountAnalytics);
     }
 
     @QueryHandler

@@ -23,8 +23,13 @@ public class AccountAnalyticsController {
     }
 
     @GetMapping(value = "/query/accountAnalytics/{accountId}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public CompletableFuture<AccountAnalytics> getAccountAnalyticsWatch(@PathVariable String accountId) {
-        return queryGateway.query(new GetAllAccountAnalyticsQuery(accountId),
-                ResponseTypes.instanceOf(AccountAnalytics.class));
+    public Flux<AccountAnalytics> getAccountAnalyticsWatch(@PathVariable String accountId) {
+
+        SubscriptionQueryResult<AccountAnalytics, AccountAnalytics> subscriptionQueryResult = queryGateway
+                .subscriptionQuery(new GetAccountAnalyticsQuery(accountId), AccountAnalytics.class,
+                        AccountAnalytics.class);
+
+        return subscriptionQueryResult.initialResult().concatWith(subscriptionQueryResult.updates());
     }
+
 }
