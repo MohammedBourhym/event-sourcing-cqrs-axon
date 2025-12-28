@@ -1,7 +1,21 @@
 package com.example.analytics.controllers;
 
+import com.example.analytics.entities.AccountAnalytics;
+import com.example.analytics.queries.GetAccountAnalyticsQuery;
+import com.example.analytics.queries.GetAllAccountAnalyticsQuery;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.SubscriptionQueryResult;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @AllArgsConstructor
@@ -11,7 +25,7 @@ public class AccountAnalyticsController {
     private QueryGateway queryGateway;
 
     @GetMapping("/query/accountAnalytics")
-    public List<AccountAnalytics> getAccountAnalytics() {
+    public CompletableFuture<List<AccountAnalytics>> getAccountAnalytics() {
         return queryGateway.query(new GetAllAccountAnalyticsQuery(),
                 ResponseTypes.multipleInstancesOf(AccountAnalytics.class));
     }

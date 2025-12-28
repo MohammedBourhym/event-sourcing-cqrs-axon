@@ -46,7 +46,7 @@ public class AccountAggregate {
     public void on(AccountCreatedEvent event) {
         log.info("########### AccountCreatedEvent ##############");
         this.accountId = event.getAccountId();
-        this.balance = event.getInitBalace();
+        this.balance = event.getInitialBalance();
         this.status = event.getStatus();
     }
 

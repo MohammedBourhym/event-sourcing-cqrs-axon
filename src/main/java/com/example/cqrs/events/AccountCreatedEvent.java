@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AccountCreatedEvent {
     private String accountId;
-    private Double initBalace;
+    private Double initialBalance;
     private AccountStatus status;
     private String currency;
 
