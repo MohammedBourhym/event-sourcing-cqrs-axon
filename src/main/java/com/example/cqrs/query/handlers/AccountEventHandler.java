@@ -26,7 +26,8 @@ public class AccountEventHandler {
         private OperationRepository operationRepository;
         private QueryUpdateEmitter queryUpdateEmitter;
 
-        public AccountEventHandler(AccountRepository accountRepository, OperationRepository operationRepository) {
+        public AccountEventHandler(AccountRepository accountRepository, OperationRepository operationRepository,
+                        QueryUpdateEmitter queryUpdateEmitter) {
                 this.accountRepository = accountRepository;
                 this.operationRepository = operationRepository;
                 this.queryUpdateEmitter = queryUpdateEmitter;

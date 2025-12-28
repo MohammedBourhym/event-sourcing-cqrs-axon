@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AccountAnalytics {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String accountId;
     private double balance;
     private double totalDebit;
