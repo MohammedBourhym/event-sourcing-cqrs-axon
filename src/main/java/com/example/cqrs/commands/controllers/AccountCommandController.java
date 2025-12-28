@@ -4,13 +4,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cqrs.commands.commands.AddAccountCommand;
+import com.example.cqrs.commands.commands.CreditAccountCommand;
 import com.example.cqrs.commands.dto.AddNewAccountReqDTO;
+import com.example.cqrs.commands.dto.CreditAccountRequestDTO;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -18,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/commands")
 public class AccountCommandController {
 
-    private CommandGateway commandGateway;
+    private final CommandGateway commandGateway;
+    private final EventStore eventStore;
 
-    AccountCommandController(CommandGateway commandGateway) {
+    AccountCommandController(CommandGateway commandGateway, EventStore eventStore) {
         this.commandGateway = commandGateway;
+        this.eventStore = eventStore;
     }
 
     @PostMapping("/add")
@@ -31,6 +39,18 @@ public class AccountCommandController {
                 request.initBalance(),
                 request.currency()));
         return response;
+    }
+
+    @PostMapping("/credit")
+    public CompletableFuture<String> creditAccount(@RequestBody CreditAccountRequestDTO request) {
+        CompletableFuture<String> response = commandGateway
+                .send(new CreditAccountCommand(request.accountId(),request.amount(),request.currency()));
+        return response;
+    }
+
+    @GetMapping("/events/{accountId}")
+    public Stream eventStream(@PathVariable String accountId) {
+        return eventStore.readEvents(accountId).asStream();
     }
 
     @ExceptionHandler(Exception.class)
