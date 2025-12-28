@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function updateChart() {
+            accountId = document.getElementById("accountId").value;
+
+            const ctx = document.getElementById('myChart')
+            let chartData = {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Balance',
+                        data: [],
+                        borderColor: 'rgba(75,192,192,1)',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Account Analytics'
+                        }
+                    }
+                }
+            }
+            const myChart = new Chart(ctx, chartData)
+            let stockEventSource = new EventSource('/query/accountAnalytics/' + accountId + '/watch')
+            stockEventSource.onmessage = function (event) {
+                let data = JSON.parse(event.data)
+                chartData.data.labels.push(data.accountId)
+                chartData.data.datasets[0].data.push(data.balance)
+                chartData.data.datasets[1].data.push(data.totalDebit)
+                chartData.data.datasets[2].data.push(data.totalCredit)
+                chartData.data.datasets[3].data.push(data.totalNumberOfDebits)
+                chartData.data.datasets[4].data.push(data.totalNumberOfCredits)
+                myChart.update()
+            }
+    </script>
+</head>
+
+<body>
+    <div class="row">
+        <div class="col">
+            <input type="text" id="accountId" placeholder="Account ID">
+            <button onclick="updateChart()">Update Chart</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <canvas id="myChart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+
+</html>

@@ -34,7 +34,8 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setTotalDebit(accountAnalytics.getTotalDebit() + event.getAmount());
         accountAnalytics.setTotalNumberOfDebits(accountAnalytics.getTotalNumberOfDebits() + 1);
         accountAnalyticsRepository.save(accountAnalytics);
-        queryUpdateEmitter.emit(AccountAnalytics.class, (query) -> query.getAccountId().equals(event.getAccountId()),
+        queryUpdateEmitter.emit(GetAccountAnalyticsQuery.class,
+                (query) -> query.getAccountId().equals(event.getAccountId()),
                 accountAnalytics);
     }
 
@@ -46,7 +47,8 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setTotalCredit(accountAnalytics.getTotalCredit() + event.getAmount());
         accountAnalytics.setTotalNumberOfCredits(accountAnalytics.getTotalNumberOfCredits() + 1);
         accountAnalyticsRepository.save(accountAnalytics);
-        queryUpdateEmitter.emit(AccountAnalytics.class, (query) -> query.getAccountId().equals(event.getAccountId()),
+        queryUpdateEmitter.emit(GetAccountAnalyticsQuery.class,
+                (query) -> query.getAccountId().equals(event.getAccountId()),
                 accountAnalytics);
     }
 
