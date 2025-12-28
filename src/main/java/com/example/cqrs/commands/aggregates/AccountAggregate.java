@@ -9,11 +9,13 @@ import org.axonframework.spring.stereotype.Aggregate;
 import com.example.cqrs.commands.commands.AddAccountCommand;
 import com.example.cqrs.commands.commands.CreditAccountCommand;
 import com.example.cqrs.commands.commands.DebitAccountCommand;
+import com.example.cqrs.commands.commands.UpdateAccountStatusCommand;
 import com.example.cqrs.enums.AccountStatus;
 import com.example.cqrs.events.AccountActivatedEvent;
 import com.example.cqrs.events.AccountCreatedEvent;
 import com.example.cqrs.events.AccountCreditedEvent;
 import com.example.cqrs.events.AccountDebitedEvent;
+import com.example.cqrs.events.AccountStatusUpdatedEvent;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,16 +78,42 @@ public class AccountAggregate {
         this.balance = this.balance + event.getAmount();
     }
 
-
-
     @CommandHandler
-    public void handleCommand(DebitAccountCommand command){
+    public void handleCommand(DebitAccountCommand command) {
         log.info("########## DebitAccountCommand Command ###########");
-        if (!this.status.equals(AccountStatus.ACTIVATED)) throw  new RuntimeException("This account can not be debited because of the account is not activated. The current status is "+status);
-        if (command.getAmount()>balance) throw  new RuntimeException("Balance not sufficient exception");
+        if (!this.status.equals(AccountStatus.ACTIVATED))
+            throw new RuntimeException(
+                    "This account can not be debited because of the account is not activated. The current status is "
+                            + status);
+        if (command.getAmount() > balance)
+            throw new RuntimeException("Balance not sufficient exception");
         AggregateLifecycle.apply(new AccountDebitedEvent(
                 command.getId(),
-                command.getAmount()
-        ));
+                command.getAmount()));
+    }
+
+    @EventSourcingHandler
+    public void on(AccountDebitedEvent event) {
+        log.info("################## AccountDebitedEvent ################");
+        this.accountId = event.accountId();
+        this.balance = this.balance - event.amount();
+    }
+
+    @CommandHandler
+    public void handleCommand(UpdateAccountStatusCommand command) {
+        log.info("################# UpdateAccountStatusCommand Command ###########################");
+        if (this.status.equals(command.getAccountStatus()))
+            throw new RuntimeException("This account is already the " + status + " state");
+        AggregateLifecycle.apply(new AccountStatusUpdatedEvent(
+                command.getId(),
+                status,
+                command.getAccountStatus()));
+    }
+
+    @EventSourcingHandler
+    public void on(AccountStatusUpdatedEvent event) {
+        log.info("############### AccountStatusUpdatedEvent ########");
+        this.accountId = event.accountId();
+        this.status = event.toStatus();
     }
 }
