@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cqrs.commands.commands.AddAccountCommand;
 import com.example.cqrs.commands.commands.CreditAccountCommand;
+import com.example.cqrs.commands.commands.DebitAccountCommand;
 import com.example.cqrs.commands.dto.AddNewAccountReqDTO;
 import com.example.cqrs.commands.dto.CreditAccountRequestDTO;
+import com.example.cqrs.commands.dto.DebitAccountDTO;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +53,16 @@ public class AccountCommandController {
     @GetMapping("/events/{accountId}")
     public Stream eventStream(@PathVariable String accountId) {
         return eventStore.readEvents(accountId).asStream();
+    }
+
+
+    @PostMapping("/debit")
+    public CompletableFuture<String> debitAccount(@RequestBody DebitAccountDTO request){
+        CompletableFuture<String> result = this.commandGateway.send(new DebitAccountCommand(
+                request.accountId(),
+                request.amount()
+        ));
+        return result;
     }
 
     @ExceptionHandler(Exception.class)
