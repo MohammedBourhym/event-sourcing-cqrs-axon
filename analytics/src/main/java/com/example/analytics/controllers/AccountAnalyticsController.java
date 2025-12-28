@@ -17,18 +17,14 @@ public class AccountAnalyticsController {
     }
 
     @GetMapping("/query/accountAnalytics/{accountId}")
-    public AccountAnalytics getAccountAnalytics(@PathVariable String accountId) {
+    public CompletableFuture<AccountAnalytics> getAccountAnalytics(@PathVariable String accountId) {
         return queryGateway.query(new GetAccountAnalyticsQuery(accountId),
                 ResponseTypes.instanceOf(AccountAnalytics.class));
     }
 
-    @QueryHandler
-    public List<AccountAnalytics> on(GetAllAccountAnalyticsQuery query) {
-        return accountAnalyticsRepository.findAll();
-    }
-
-    @QueryHandler
-    public AccountAnalytics on(GetAccountAnalyticsQuery query) {
-        return accountAnalyticsRepository.findByAccountId(query.getAccountId());
+    @GetMapping(value = "/query/accountAnalytics/{accountId}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public CompletableFuture<AccountAnalytics> getAccountAnalyticsWatch(@PathVariable String accountId) {
+        return queryGateway.query(new GetAllAccountAnalyticsQuery(accountId),
+                ResponseTypes.instanceOf(AccountAnalytics.class));
     }
 }

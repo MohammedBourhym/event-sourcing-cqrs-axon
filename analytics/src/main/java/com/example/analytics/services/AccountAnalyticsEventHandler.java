@@ -43,4 +43,14 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setTotalNumberOfCredits(accountAnalytics.getTotalNumberOfCredits() + 1);
         accountAnalyticsRepository.save(accountAnalytics);
     }
+
+    @QueryHandler
+    public List<AccountAnalytics> on(GetAllAccountAnalyticsQuery query) {
+        return accountAnalyticsRepository.findAll();
+    }
+
+    @QueryHandler
+    public AccountAnalytics on(GetAccountAnalyticsQuery query) {
+        return accountAnalyticsRepository.findByAccountId(query.getAccountId());
+    }
 }
