@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +47,7 @@ public class AccountCommandController {
     @PostMapping("/credit")
     public CompletableFuture<String> creditAccount(@RequestBody CreditAccountRequestDTO request) {
         CompletableFuture<String> response = commandGateway
-                .send(new CreditAccountCommand(request.accountId(),request.amount(),request.currency()));
+                .send(new CreditAccountCommand(request.accountId(), request.amount(), request.currency()));
         return response;
     }
 
@@ -55,16 +56,15 @@ public class AccountCommandController {
         return eventStore.readEvents(accountId).asStream();
     }
 
-
     @PostMapping("/debit")
-    public CompletableFuture<String> debitAccount(@RequestBody DebitAccountDTO request){
+    public CompletableFuture<String> debitAccount(@RequestBody DebitAccountDTO request) {
         CompletableFuture<String> result = this.commandGateway.send(new DebitAccountCommand(
                 request.accountId(),
-                request.amount()
-        ));
+                request.amount()));
         return result;
     }
 
+   
     @ExceptionHandler(Exception.class)
     public String exceptionHandler(Exception exception) {
         return exception.getMessage();
